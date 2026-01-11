@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.umesh</groupId>
+    <artifactId>backend-learning</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.3.0</version>
+            <scope>compile</scope>  <!-- Force compile scope -->
+        </dependency>
+    </dependencies>
+    <!-- ADD PLUGIN HERE 👇 -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.6.3</version>
+                <!-- Optional: Configure main class -->
+                <configuration>
+                    <mainClass>com.umesh.backend.Application</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <!-- END PLUGIN SECTION 👆 -->
+</project>
