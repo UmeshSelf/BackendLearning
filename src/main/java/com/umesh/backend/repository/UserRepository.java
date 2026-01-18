@@ -8,19 +8,9 @@ import java.util.List;
 
 public class UserRepository {
 
-    static {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            System.out.println("✅ MySQL Driver loaded!");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("❌ MySQL Driver missing!", e);
-        }
-    }
-
-    public List<User> findAll() throws SQLException {
+    public List<User> findAll(ConnectionProvider provider) throws SQLException {  // Add provider
         List<User> users = new ArrayList<>();
-        String url = "jdbc:mysql://127.0.0.1:3306/learnProcedures?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
-        try (Connection conn = DriverManager.getConnection(url, "root", "Ume$h2896");
+        try (Connection conn = provider.getConnection();  // Use provider instead of hardcoded
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT * FROM users")) {
             while (rs.next()) {
@@ -96,5 +86,59 @@ public class UserRepository {
             return stmt.getInt(2);                          // ✅ Position 2 = OUT result
         }
     }
+
+    // ADD THIS METHOD to your existing UserRepository class
+    public void createUsersTable(ConnectionProvider provider) throws SQLException {
+        String createTableSQL = """
+        CREATE TABLE IF NOT EXISTS users (
+            user_id INT PRIMARY KEY AUTO_INCREMENT,
+            first_name VARCHAR(100) NOT NULL,
+            last_name VARCHAR(100) NOT NULL,
+            city VARCHAR(100) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """;
+
+        try (Connection conn = provider.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(createTableSQL);
+            System.out.println("✅ Users table created/verified successfully!");
+        }
+    }
+
+
+    // ADD THIS METHOD to UserRepository
+    public void insertSampleData(ConnectionProvider provider) throws SQLException {
+        String insertSQL = """
+        INSERT IGNORE INTO users (first_name, last_name, city) VALUES
+        ('Durgesh', 'Tiwari', 'Bengaluru'),
+        ('John', 'Doe', 'Mumbai'),
+        ('Jane', 'Smith', 'Delhi'),
+        ('Priya', 'Sharma', 'Pune')
+        """;
+
+        try (Connection conn = provider.getConnection();
+             Statement stmt = conn.createStatement()) {
+            int rowsInserted = stmt.executeUpdate(insertSQL);
+            System.out.println("✅ Inserted " + rowsInserted + " sample users");
+        }
+    }
+
+    // ADD THIS METHOD to see table structure
+    public void showTableInfo(ConnectionProvider provider) throws SQLException {
+        try (Connection conn = provider.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("DESCRIBE users")) {
+
+            System.out.println("\n📋 USERS TABLE STRUCTURE:");
+            while (rs.next()) {
+                System.out.printf("Field: %-12s Type: %-15s Null: %s%n",
+                        rs.getString("Field"),
+                        rs.getString("Type"),
+                        rs.getString("Null"));
+            }
+        }
+    }
+
 
 }
