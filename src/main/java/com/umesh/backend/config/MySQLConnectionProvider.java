@@ -9,14 +9,6 @@ public class MySQLConnectionProvider implements ConnectionProvider {
     private final String username = "root";
     private final String password = "Ume$h2896";
 
-    static {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("MySQL Driver not found", e);
-        }
-    }
-
     @Override
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(url, username, password);

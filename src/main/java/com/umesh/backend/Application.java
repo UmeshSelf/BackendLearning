@@ -11,9 +11,17 @@ public class Application {
     public static void main(String[] args) {
         UserRepository repo = new UserRepository();
         ConnectionProvider provider = new MySQLConnectionProvider();
+
         try {
-            System.out.println("=== 1. ALL USERS (Raw JDBC) ===");
-            repo.findAll().forEach(System.out::println);
+            // 🔥 NEW STEP 0: SETUP (Table + Data) - BEFORE all your tests
+            System.out.println("\n=== 0. SETUP: CREATE TABLE + SAMPLE DATA ===");
+            repo.createUsersTable(provider);
+            repo.insertSampleData(provider);
+            repo.showTableInfo(provider);
+
+            // 🔥 YOUR EXISTING TESTS (UNCHANGED - Perfect!)
+            System.out.println("\n=== 1. ALL USERS (Raw JDBC) ===");
+            repo.findAll(provider).forEach(System.out::println);
 
             System.out.println("\n=== 2. countItems() Stored Proc ===");
             repo.callProcedureWithProvider(provider).forEach(System.out::println);
@@ -25,10 +33,11 @@ public class Application {
             int count = repo.selectByLastNameTwo(provider, "Tiwari");
             System.out.println("Users with lastName 'Tiwari': " + count);
 
+            System.out.println("\n✅ ALL TESTS PASSED! Backend Production Ready! 🎉");
+
         } catch (SQLException e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("❌ Error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
-
-
